@@ -65,7 +65,7 @@ impl<'a> fmt::Display for Header<'a> {
 pub struct HeaderPt1 {
     pub magic: [u8; 4],
     pub class: Class,
-    pub data: Data_,
+    pub data: Data,
     pub version: Version_,
     pub os_abi: OsAbi_,
     // Often also just padding.
@@ -81,7 +81,7 @@ impl HeaderPt1 {
     }
 
     pub fn data(&self) -> Data {
-        self.data.as_data()
+        self.data
     }
 
     pub fn version(&self) -> Version {
@@ -208,41 +208,30 @@ impl fmt::Debug for Class {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct Data_(u8);
-
-impl Data_ {
-    pub fn as_data(self) -> Data {
-        match self.0 {
-            0 => Data::None,
-            1 => Data::LittleEndian,
-            2 => Data::BigEndian,
-            other => Data::Other(other),
-        }
-    }
-
-    pub fn is_none(self) -> bool {
-        self.0 == 0
-    }
-}
-
-impl fmt::Debug for Data_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_data().fmt(f)
-    }
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum Data {
-    None,
-    LittleEndian,
-    BigEndian,
-    Other(u8),
-}
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Data(pub u8);
 
 impl Data {
+    #[allow(non_upper_case_globals)]
+    const None: Self = Self(0);
+    #[allow(non_upper_case_globals)]
+    const LittleEndian: Self = Self(1);
+    #[allow(non_upper_case_globals)]
+    const BigEndian: Self = Self(2);
+
     pub fn is_none(&self) -> bool {
-        if let Data::None = *self { true } else { false }
+        *self == Self::None
+    }
+}
+
+impl fmt::Debug for Data {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Self::None => write!(f, "None"),
+            Self::LittleEndian => write!(f, "LittleEndian"),
+            Self::BigEndian => write!(f, "BigEndian"),
+            Self(n) => write!(f, "Other({})", n)
+        }
     }
 }
 
