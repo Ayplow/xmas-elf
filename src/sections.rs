@@ -38,7 +38,7 @@ pub fn parse_section_header<'a>(input: &'a [u8],
             let header: &'a SectionHeader_<P64> = read(&input[start..end]);
             SectionHeader::Sh64(header)
         }
-        Class::None | Class::Other(_) => unreachable!(),
+        _ => unreachable!(),
     })
 }
 
@@ -112,7 +112,7 @@ impl<'a> SectionHeader<'a> {
                 match elf_file.header.pt1.class() {
                     Class::ThirtyTwo => SectionData::$data32(read_array(data)),
                     Class::SixtyFour => SectionData::$data64(read_array(data)),
-                    Class::None | Class::Other(_) => unreachable!(),
+                    _ => unreachable!(),
                 }
             }}
         }
@@ -156,7 +156,7 @@ impl<'a> SectionHeader<'a> {
                         let index = &data[12..];
                         SectionData::Note64(header, index)
                     }
-                    Class::None | Class::Other(_) => unreachable!(),
+                    _ => unreachable!(),
                 }
             }
             ShType::Hash => {

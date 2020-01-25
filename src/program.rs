@@ -27,7 +27,7 @@ pub fn parse_program_header<'a>(input: &'a [u8],
         Class::SixtyFour => {
             Ok(ProgramHeader::Ph64(read(&input[start..end])))
         }
-        Class::None | Class::Other(_) => unreachable!(),
+        _ => unreachable!(),
     }
 }
 
@@ -150,7 +150,7 @@ macro_rules! ph_impl {
                         match elf_file.header.pt1.class() {
                             Class::ThirtyTwo => SegmentData::Dynamic32(read_array(data)),
                             Class::SixtyFour => SegmentData::Dynamic64(read_array(data)),
-                            Class::None | Class::Other(_) => unreachable!(),
+                            _ => unreachable!(),
                         }
                     }
                     Type::Note => {
@@ -162,7 +162,7 @@ macro_rules! ph_impl {
                                 let index = &data[12..];
                                 SegmentData::Note64(header, index)
                             }
-                            Class::None | Class::Other(_) => unreachable!(),
+                            _ => unreachable!(),
                         }
                     }
                 })

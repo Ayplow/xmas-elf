@@ -17,17 +17,17 @@ pub fn parse_header<'a>(input: &'a [u8]) -> Result<Header<'a>, &'static str> {
     }
 
     let header_2 = match header_1.class() {
-        Class::None | Class::Other(_) => return Err("Invalid ELF class"),
         Class::ThirtyTwo => {
             let header_2: &'a HeaderPt2_<P32> =
-                read(&input[size_pt1..size_pt1 + mem::size_of::<HeaderPt2_<P32>>()]);
+            read(&input[size_pt1..size_pt1 + mem::size_of::<HeaderPt2_<P32>>()]);
             HeaderPt2::Header32(header_2)
         }
         Class::SixtyFour => {
             let header_2: &'a HeaderPt2_<P64> =
-                read(&input[size_pt1..size_pt1 + mem::size_of::<HeaderPt2_<P64>>()]);
+            read(&input[size_pt1..size_pt1 + mem::size_of::<HeaderPt2_<P64>>()]);
             HeaderPt2::Header64(header_2)
         }
+        _ => return Err("Invalid ELF class"),
     };
     Ok(Header {
         pt1: header_1,
@@ -64,7 +64,7 @@ impl<'a> fmt::Display for Header<'a> {
 #[repr(C)]
 pub struct HeaderPt1 {
     pub magic: [u8; 4],
-    pub class: Class_,
+    pub class: Class,
     pub data: Data_,
     pub version: Version_,
     pub os_abi: OsAbi_,
@@ -77,7 +77,7 @@ unsafe impl Pod for HeaderPt1 {}
 
 impl HeaderPt1 {
     pub fn class(&self) -> Class {
-        self.class.as_class()
+        self.class
     }
 
     pub fn data(&self) -> Data {
@@ -182,40 +182,29 @@ impl<P: fmt::Display> fmt::Display for HeaderPt2_<P> {
 }
 
 #[derive(Clone, Copy, Eq, PartialEq)]
-pub struct Class_(u8);
-
-impl Class_ {
-    pub fn as_class(self) -> Class {
-        match self.0 {
-            0 => Class::None,
-            1 => Class::ThirtyTwo,
-            2 => Class::SixtyFour,
-            other => Class::Other(other),
-        }
-    }
-
-    pub fn is_none(self) -> bool {
-        self.0 == 0
-    }
-}
-
-impl fmt::Debug for Class_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_class().fmt(f)
-    }
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum Class {
-    None,
-    ThirtyTwo,
-    SixtyFour,
-    Other(u8),
-}
+pub struct Class(pub u8);
 
 impl Class {
+    #[allow(non_upper_case_globals)]
+    pub const None: Self = Self(0);
+    #[allow(non_upper_case_globals)]
+    pub const ThirtyTwo: Self = Self(1);
+    #[allow(non_upper_case_globals)]
+    pub const SixtyFour: Self = Self(2);
+
     pub fn is_none(&self) -> bool {
-        if let Class::None = *self { true } else { false }
+        *self == Self::None
+    }
+}
+
+impl fmt::Debug for Class {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Self::None => write!(f, "None"),
+            Self::ThirtyTwo => write!(f, "ThirtyTwo"),
+            Self::SixtyFour => write!(f, "SixtyFour"),
+            Self(n) => write!(f, "Other({})", n)
+        }
     }
 }
 
