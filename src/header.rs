@@ -67,7 +67,7 @@ pub struct HeaderPt1 {
     pub class: Class,
     pub data: Data,
     pub version: Version,
-    pub os_abi: OsAbi_,
+    pub os_abi: OsAbi,
     // Often also just padding.
     pub abi_version: u8,
     pub padding: [u8; 7],
@@ -89,7 +89,7 @@ impl HeaderPt1 {
     }
 
     pub fn os_abi(&self) -> OsAbi {
-        self.os_abi.as_os_abi()
+        self.os_abi
     }
 }
 
@@ -259,47 +259,62 @@ impl fmt::Debug for Version {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct OsAbi_(u8);
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct OsAbi(pub u8);
 
-impl OsAbi_ {
-    pub fn as_os_abi(self) -> OsAbi {
-        match self.0 {
-            0x00 => OsAbi::SystemV,
-            0x01 => OsAbi::HpUx,
-            0x02 => OsAbi::NetBSD,
-            0x03 => OsAbi::Linux,
-            0x06 => OsAbi::Solaris,
-            0x07 => OsAbi::Aix,
-            0x08 => OsAbi::Irix,
-            0x09 => OsAbi::FreeBSD,
-            0x0C => OsAbi::OpenBSD,
-            0x0D => OsAbi::OpenVMS,
-            other => OsAbi::Other(other),
+impl OsAbi {
+    #[allow(non_upper_case_globals)]
+    pub const SystemV: Self = Self(0x00);
+    #[allow(non_upper_case_globals)]
+    pub const HpUx: Self = Self(0x01);
+    #[allow(non_upper_case_globals)]
+    pub const NetBSD: Self = Self(0x02);
+    #[allow(non_upper_case_globals)]
+    pub const Linux: Self = Self(0x03);
+    #[allow(non_upper_case_globals)]
+    pub const GnuHurd: Self = Self(0x04);
+    #[allow(non_upper_case_globals)]
+    pub const Solaris: Self = Self(0x06);
+    #[allow(non_upper_case_globals)]
+    pub const Aix: Self = Self(0x07);
+    #[allow(non_upper_case_globals)]
+    pub const Irix: Self = Self(0x08);
+    #[allow(non_upper_case_globals)]
+    pub const FreeBSD: Self = Self(0x09);
+    #[allow(non_upper_case_globals)]
+    pub const Tru64: Self = Self(0x0A);
+    #[allow(non_upper_case_globals)]
+    pub const NovellModesto: Self = Self(0x0B);
+    #[allow(non_upper_case_globals)]
+    pub const OpenBSD: Self = Self(0x0C);
+    #[allow(non_upper_case_globals)]
+    pub const OpenVMS: Self = Self(0x0D);
+    #[allow(non_upper_case_globals)]
+    pub const NonStopKernel: Self = Self(0x0E);
+    #[allow(non_upper_case_globals)]
+    pub const AROS: Self = Self(0x0F);
+    #[allow(non_upper_case_globals)]
+    pub const FenixOS: Self = Self(0x10);
+    #[allow(non_upper_case_globals)]
+    pub const CloudABI: Self = Self(0x11);
+}
+
+impl fmt::Debug for OsAbi {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Self::SystemV => write!(f, "SystemV"),
+            Self::HpUx => write!(f, "HpUx"),
+            Self::NetBSD => write!(f, "NetBSD"),
+            Self::Linux => write!(f, "Linux"),
+            Self::Solaris => write!(f, "Solaris"),
+            Self::Aix => write!(f, "Aix"),
+            Self::Irix => write!(f, "Irix"),
+            Self::FreeBSD => write!(f, "FreeBSD"),
+            Self::OpenBSD => write!(f, "OpenBSD"),
+            Self::OpenVMS => write!(f, "OpenVMS"),
+            Self(n) => write!(f, "Other({})", n)
         }
     }
-}
-
-impl fmt::Debug for OsAbi_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_os_abi().fmt(f)
-    }
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum OsAbi {
-    // or None
-    SystemV,
-    HpUx,
-    NetBSD,
-    Linux,
-    Solaris,
-    Aix,
-    Irix,
-    FreeBSD,
-    OpenBSD,
-    OpenVMS,
-    Other(u8), // FIXME there are many, many more of these
 }
 
 #[derive(Clone, Copy)]
