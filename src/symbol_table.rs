@@ -1,5 +1,5 @@
-use ElfFile;
-use sections;
+use crate::ElfFile;
+use crate::sections;
 
 use zero::Pod;
 
@@ -84,9 +84,9 @@ pub trait Entry {
                 // TODO factor out distinguished section names into sections consts
                 let header = elf_file.find_section_by_name(".symtab_shndx");
                 if let Some(header) = header {
-                    assert_eq!(try!(header.get_type()), sections::ShType::SymTabShIndex);
+                    assert_eq!(r#try!(header.get_type()), sections::ShType::SymTabShIndex);
                     if let sections::SectionData::SymTabShIndex(data) =
-                        try!(header.get_data(elf_file)) {
+                        r#try!(header.get_data(elf_file)) {
                         // TODO cope with u32 section indices (count is in sh_size of header 0, etc.)
                         // Note that it is completely bogus to crop to u16 here.
                         let index = data[self_index] as u16;
@@ -107,16 +107,16 @@ pub trait Entry {
     }
 }
 
-impl fmt::Display for Entry {
+impl fmt::Display for dyn Entry {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        try!(writeln!(f, "Symbol table entry:"));
-        try!(writeln!(f, "    name:             {:?}", self.name()));
-        try!(writeln!(f, "    binding:          {:?}", self.get_binding()));
-        try!(writeln!(f, "    type:             {:?}", self.get_type()));
-        try!(writeln!(f, "    other:            {:?}", self.get_other()));
-        try!(writeln!(f, "    shndx:            {:?}", self.shndx()));
-        try!(writeln!(f, "    value:            {:?}", self.value()));
-        try!(writeln!(f, "    size:             {:?}", self.size()));
+        r#try!(writeln!(f, "Symbol table entry:"));
+        r#try!(writeln!(f, "    name:             {:?}", self.name()));
+        r#try!(writeln!(f, "    binding:          {:?}", self.get_binding()));
+        r#try!(writeln!(f, "    type:             {:?}", self.get_type()));
+        r#try!(writeln!(f, "    other:            {:?}", self.get_other()));
+        r#try!(writeln!(f, "    shndx:            {:?}", self.shndx()));
+        r#try!(writeln!(f, "    value:            {:?}", self.value()));
+        r#try!(writeln!(f, "    size:             {:?}", self.size()));
         Ok(())
     }
 }

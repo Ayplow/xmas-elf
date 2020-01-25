@@ -31,9 +31,9 @@ pub mod symbol_table;
 pub mod dynamic;
 pub mod hash;
 
-use header::Header;
-use sections::{SectionHeader, SectionIter};
-use program::{ProgramHeader, ProgramIter};
+use crate::header::Header;
+use crate::sections::{SectionHeader, SectionIter};
+use crate::program::{ProgramHeader, ProgramIter};
 use zero::{read, read_str};
 
 pub type P32 = u32;
@@ -47,7 +47,7 @@ pub struct ElfFile<'a> {
 
 impl<'a> ElfFile<'a> {
     pub fn new(input: &'a [u8]) -> Result<ElfFile<'a>, &'static str> {
-        let header = try!(header::parse_header(input));
+        let header = r#try!(header::parse_header(input));
         Ok(ElfFile {
             input: input,
             header: header,
@@ -81,15 +81,15 @@ impl<'a> ElfFile<'a> {
     }
 
     pub fn get_string(&self, index: u32) -> Result<&'a str, &'static str> {
-        let header = try!(self.find_section_by_name(".strtab").ok_or("no .strtab section"));
-        if try!(header.get_type()) != sections::ShType::StrTab {
+        let header = r#try!(self.find_section_by_name(".strtab").ok_or("no .strtab section"));
+        if r#try!(header.get_type()) != sections::ShType::StrTab {
             return Err("expected .strtab to be StrTab");
         }
         Ok(read_str(&header.raw_data(self)[(index as usize)..]))
     }
 
     pub fn get_dyn_string(&self, index: u32) -> Result<&'a str, &'static str> {
-        let header = try!(self.find_section_by_name(".dynstr").ok_or("no .dynstr section"));
+        let header = r#try!(self.find_section_by_name(".dynstr").ok_or("no .dynstr section"));
         Ok(read_str(&header.raw_data(self)[(index as usize)..]))
     }
 
@@ -173,7 +173,7 @@ mod test {
     use std::mem;
 
     use super::*;
-    use header::{HeaderPt1, HeaderPt2_};
+    use crate::header::{HeaderPt1, HeaderPt2_};
 
     fn mk_elf_header(class: u8) -> Vec<u8> {
         let header_size = mem::size_of::<HeaderPt1>() +

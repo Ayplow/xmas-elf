@@ -10,12 +10,12 @@ use core::slice;
 #[cfg(feature = "compression")]
 use flate2::{Decompress, FlushDecompress};
 
-use {P32, P64, ElfFile};
-use header::{Header, Class};
+use crate::{P32, P64, ElfFile};
+use crate::header::{Header, Class};
 use zero::{read, read_array, read_str, read_strs_to_null, StrReaderIterator, Pod};
-use symbol_table;
-use dynamic::Dynamic;
-use hash::HashTable;
+use crate::symbol_table;
+use crate::dynamic::Dynamic;
+use crate::hash::HashTable;
 
 pub fn parse_section_header<'a>(input: &'a [u8],
                                 header: Header<'a>,
@@ -223,16 +223,16 @@ impl<'a> fmt::Display for SectionHeader<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         macro_rules! sh_display {
             ($sh: ident) => {{
-                try!(writeln!(f, "Section header:"));
-                try!(writeln!(f, "    name:             {:?}", $sh.name));
-                try!(writeln!(f, "    type:             {:?}", self.get_type()));
-                try!(writeln!(f, "    flags:            {:?}", $sh.flags));
-                try!(writeln!(f, "    address:          {:?}", $sh.address));
-                try!(writeln!(f, "    offset:           {:?}", $sh.offset));
-                try!(writeln!(f, "    size:             {:?}", $sh.size));
-                try!(writeln!(f, "    link:             {:?}", $sh.link));
-                try!(writeln!(f, "    align:            {:?}", $sh.align));
-                try!(writeln!(f, "    entry size:       {:?}", $sh.entry_size));
+                r#try!(writeln!(f, "Section header:"));
+                r#try!(writeln!(f, "    name:             {:?}", $sh.name));
+                r#try!(writeln!(f, "    type:             {:?}", self.get_type()));
+                r#try!(writeln!(f, "    flags:            {:?}", $sh.flags));
+                r#try!(writeln!(f, "    address:          {:?}", $sh.address));
+                r#try!(writeln!(f, "    offset:           {:?}", $sh.offset));
+                r#try!(writeln!(f, "    size:             {:?}", $sh.size));
+                r#try!(writeln!(f, "    link:             {:?}", $sh.link));
+                r#try!(writeln!(f, "    align:            {:?}", $sh.align));
+                r#try!(writeln!(f, "    entry size:       {:?}", $sh.entry_size));
                 Ok(())
             }}
         }
@@ -557,7 +557,7 @@ impl NoteHeader {
 }
 
 pub fn sanity_check<'a>(header: SectionHeader<'a>, _file: &ElfFile<'a>) -> Result<(), &'static str> {
-    if try!(header.get_type()) == ShType::Null {
+    if r#try!(header.get_type()) == ShType::Null {
         return Ok(());
     }
     // TODO

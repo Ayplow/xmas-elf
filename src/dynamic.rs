@@ -1,5 +1,5 @@
 use core::fmt;
-use {P32, P64};
+use crate::{P32, P64};
 use zero::Pod;
 
 #[derive(Debug)]
@@ -63,7 +63,7 @@ macro_rules! impls {
             }
 
             pub fn get_val(&self) -> Result<$p, &'static str> {
-                match try!(self.get_tag()) {
+                match r#try!(self.get_tag()) {
                     Tag::Needed | Tag::PltRelSize | Tag::RelaSize | Tag::RelaEnt | Tag::StrSize |
                     Tag::SymEnt | Tag::SoName | Tag::RPath | Tag::RelSize | Tag::RelEnt | Tag::PltRel |
                     Tag::InitArraySize | Tag::FiniArraySize | Tag::RunPath | Tag::Flags |
@@ -74,7 +74,7 @@ macro_rules! impls {
             }
 
             pub fn get_ptr(&self) -> Result<$p, &'static str> {
-                match try!(self.get_tag()) {
+                match r#try!(self.get_tag()) {
                     Tag::Pltgot | Tag::Hash | Tag::StrTab | Tag::SymTab | Tag::Rela | Tag::Init | Tag::Fini |
                     Tag::Rel | Tag::Debug | Tag::JmpRel | Tag::InitArray | Tag::FiniArray |
                     Tag::PreInitArray | Tag::SymTabShIndex  | Tag::OsSpecific(_) | Tag::ProcessorSpecific(_)
