@@ -120,7 +120,7 @@ impl<'a> HeaderPt2<'a> {
 
     // TODO move to impl Header
     getter!(type_, Type);
-    getter!(machine, Machine_);
+    getter!(machine, Machine);
     getter!(version, u32);
     getter!(header_size, u16);
     getter!(entry_point, u64);
@@ -146,7 +146,7 @@ impl<'a> fmt::Display for HeaderPt2<'a> {
 #[repr(C)]
 pub struct HeaderPt2_<P> {
     pub type_: Type,
-    pub machine: Machine_,
+    pub machine: Machine,
     pub version: u32,
     pub entry_point: P,
     pub ph_offset: P,
@@ -327,49 +327,387 @@ impl fmt::Debug for Type {
     }
 }
 
+tagged! {
 #[derive(Clone, Copy)]
-pub struct Machine_(u16);
+    pub Machine(u16) [
+        ///  No machine
+        None: 0,
+        ///  AT&T WE 32100
+        M32: 1,
+        ///  SUN SPARC
+        SPArc: 2,
+        ///  Intel 80386
+        x386: 3,
+        ///  Motorola m68k family
+        x68K: 4,
+        ///  Motorola m88k family
+        x88K: 5,
+        ///  Intel MCU
+        IAMCU: 6,
+        ///  Intel 80860
+        x860: 7,
+        ///  MIPS R3000 big-endian
+        MIPS: 8,
+        ///  IBM System/370
+        System370: 9,
+        ///  MIPS R3000 little-endian
+        MIPS_R3000: 10,
+        /* reserved 11-14 */
+        ///  HPPA
+        PARISC: 15,
+        /* reserved 16 */
+        ///  Fujitsu VPP500
+        VPP500: 17,
+        ///  Sun's "v8plus"
+        SPArc32Plus: 18,
+        ///  Intel 80960
+        x960: 19,
+        ///  PowerPC
+        PowerPC: 20,
+        ///  PowerPC 64-bit
+        PowerPC64: 21,
+        ///  IBM S390
+        S390: 22,
+        ///  IBM SPU/SPC
+        SPU: 23,
+        /* reserved 24-35 */
+        ///  NEC V800 series
+        V800: 36,
+        ///  Fujitsu FR20
+        FR20: 37,
+        ///  TRW RH-32
+        RH32: 38,
+        ///  Motorola RCE
+        RCE: 39,
+        ///  ARM
+        ARM: 40,
+        ///  Digital Alpha
+        FAKE_ALPHA: 41,
+        ///  Hitachi SH
+        SH: 42,
+        ///  SPARC v9 64-bit
+        SPArcV9: 43,
+        ///  Siemens Tricore
+        Tricore: 44,
+        ///  Argonaut RISC Core
+        ARC: 45,
+        ///  Hitachi H8/300
+        H8_300: 46,
+        ///  Hitachi H8/300H
+        H8_300H: 47,
+        ///  Hitachi H8S
+        H8S: 48,
+        ///  Hitachi H8/500
+        H8_500: 49,
+        ///  Intel Merced
+        IA_64: 50,
+        ///  Stanford MIPS-X
+        MIPS_X: 51,
+        ///  Motorola Coldfire
+        Coldfire: 52,
+        ///  Motorola M68HC12
+        x68HC12: 53,
+        ///  Fujitsu MMA Multimedia Accelerator
+        MMA: 54,
+        ///  Siemens PCP
+        PCP: 55,
+        ///  Sony nCPU embeeded RISC
+        nCPU: 56,
+        ///  Denso NDR1 microprocessor
+        NDR1: 57,
+        /// Motorola StarCore processor
+        StarCore: 58,
+        ///  Toyota ME16 processor
+        ME16: 59,
+        ///  STMicroelectronic ST100 processor
+        ST100: 60,
+        ///  Advanced Logic Corp. Tinyj emb.fam
+        Tinyj: 61,
+        ///  AMD x86-64 architecture
+        x86_64: 62,
+        ///  Sony DSP Processor
+        PDSP: 63,
+        ///  Digital PDP-10
+        PDP10: 64,
+        ///  Digital PDP-11
+        PDP11: 65,
+        ///  Siemens FX66 microcontroller
+        FX66: 66,
+        ///  STMicroelectronics ST9+ 8/16 mc
+        ST9Plus: 67,
+        ///  STmicroelectronics ST7 8 bit mc
+        ST7: 68,
+        ///  Motorola MC68HC16 microcontroller
+        x68HC16: 69,
+        ///  Motorola MC68HC11 microcontroller
+        x68HC11: 70,
+        ///  Motorola MC68HC08 microcontroller
+        x68HC08: 71,
+        ///  Motorola MC68HC05 microcontroller
+        x68HC05: 72,
+        ///  Silicon Graphics SVx
+        SVx: 73,
+        ///  STMicroelectronics ST19 8 bit mc
+        ST19: 74,
+        ///  Digital VAX
+        VAX: 75,
+        ///  Axis Communications 32-bit emb.proc
+        CRIS: 76,
+        ///  Infineon Technologies 32-bit emb.proc
+        Javelin: 77,
+        ///  Element14 64-bit DSP Processor
+        FirePath: 78,
+        ///  LSI Logic 16-bit DSP Processor
+        ZSP: 79,
+        ///  Donald Knuth's educational 64-bit proc
+        MMIX: 80,
+        ///  Harvard University machine-independent object files
+        HUAny: 81,
+        ///  SiTera Prism
+        Prism: 82,
+        ///  Atmel AVR 8-bit microcontroller
+        AVR: 83,
+        ///  Fujitsu FR30
+        FR30: 84,
+        ///  Mitsubishi D10V
+        D10V: 85,
+        ///  Mitsubishi D30V
+        D30V: 86,
+        ///  NEC v850
+        V850: 87,
+        ///  Mitsubishi M32R
+        M32R: 88,
+        ///  Matsushita MN10300
+        MN10300: 89,
+        ///  Matsushita MN10200
+        MN10200: 90,
+        ///  picoJava
+        picoJava: 91,
+        ///  OpenRISC 32-bit embedded processor
+        OpenRISC: 92,
+        ///  ARC International ARCompact
+        ARCompact: 93,
+        ///  Tensilica Xtensa Architecture
+        Xtensa: 94,
+        ///  Alphamosaic VideoCore
+        VideoCore: 95,
+        ///  Thompson Multimedia General Purpose Proc
+        TMM_GPP: 96,
+        ///  National Semi. 32000
+        NS32K: 97,
+        ///  Tenor Network TPC
+        TPC: 98,
+        ///  Trebia SNP 1000
+        SNP1K: 99,
+        ///  STMicroelectronics ST200
+        ST200: 100,
+        ///  Ubicom IP2xxx
+        IP2K: 101,
+        ///  MAX processor
+        MAX: 102,
+        ///  National Semi. CompactRISC
+        CompactRISC: 103,
+        ///  Fujitsu F2MC16
+        F2MC16: 104,
+        ///  Texas Instruments msp430
+        msp430: 105,
+        ///  Analog Devices Blackfin DSP
+        Blackfin: 106,
+        ///  Seiko Epson S1C33 family
+        SE_C33: 107,
+        ///  Sharp embedded microprocessor
+        SEP: 108,
+        ///  Arca RISC
+        Arca: 109,
+        ///  PKU-Unity & MPRC Peking Uni. mc series
+        Unicore: 110,
+        ///  eXcess configurable cpu
+        eXcess: 111,
+        ///  Icera Semi. Deep Execution Processor
+        DXP: 112,
+        ///  Altera Nios II
+        AlteraNios2: 113,
+        ///  National Semi. CompactRISC CRX
+        CRX: 114,
+        ///  Motorola XGATE
+        XGATE: 115,
+        ///  Infineon C16x/XC16x
+        C166: 116,
+        ///  Renesas M16C
+        M16C: 117,
+        ///  Microchip Technology dsPIC30F
+        DSPIC30F: 118,
+        ///  Freescale Communication Engine RISC
+        CE: 119,
+        ///  Renesas M32C
+        M32C: 120,
+        /* reserved 121-130 */
+        ///  Altium TSK3000
+        TSK3000: 131,
+        ///  Freescale RS08
+        RS08: 132,
+        ///  Analog Devices SHARC family
+        SHARC: 133,
+        ///  Cyan Technology eCOG2
+        eCOG2: 134,
+        ///  Sunplus S+core7 RISC
+        S_core7: 135,
+        ///  New Japan Radio (NJR) 24-bit DSP
+        DSP24: 136,
+        ///  Broadcom VideoCore III
+        VideoCore3: 137,
+        ///  RISC for Lattice FPGA
+        LatticeMICO32: 138,
+        ///  Seiko Epson C17
+        SE_C17: 139,
+        ///  Texas Instruments TMS320C6000 DSP
+        TI_C6000: 140,
+        ///  Texas Instruments TMS320C2000 DSP
+        TI_C2000: 141,
+        ///  Texas Instruments TMS320C55x DSP
+        TI_C5500: 142,
+        ///  Texas Instruments App. Specific RISC
+        TI_ARP32: 143,
+        ///  Texas Instruments Prog. Realtime Unit
+        TI_PRU: 144,
+        /* reserved 145-159 */
+        ///  STMicroelectronics 64bit VLIW DSP
+        MMDSP_Plus: 160,
+        ///  Cypress M8C
+        CypressM8C: 161,
+        ///  Renesas R32C
+        R32C: 162,
+        ///  NXP Semi. TriMedia
+        TriMedia: 163,
+        ///  QUALCOMM DSP6
+        QDSP6: 164,
+        ///  Intel 8051 and variants
+        x8051: 165,
+        ///  STMicroelectronics STxP7x
+        STXP7X: 166,
+        ///  Andes Tech. compact code emb. RISC
+        NDS32: 167,
+        ///  Cyan Technology eCOG1X
+        eCOG1X: 168,
+        ///  Dallas Semi. MAXQ30 mc
+        MAXQ30: 169,
+        ///  New Japan Radio (NJR) 16-bit DSP
+        XIMO16: 170,
+        ///  M2000 Reconfigurable RISC
+        MANIK: 171,
+        ///  Cray NV2 vector architecture
+        CrayNV2: 172,
+        ///  Renesas RX
+        RX: 173,
+        ///  Imagination Tech. META
+        METAG: 174,
+        ///  MCST Elbrus
+        MCST_Elbrus: 175,
+        ///  Cyan Technology eCOG16
+        eCOG16: 176,
+        ///  National Semi. CompactRISC CR16
+        CR16: 177,
+        ///  Freescale Extended Time Processing Unit
+        ETPU: 178,
+        ///  Infineon Tech. SLE9X
+        SLE9X: 179,
+        ///  Intel L10M
+        L10M: 180,
+        ///  Intel K10M
+        K10M: 181,
+        /* reserved 182 */
+        ///  ARM AARCH64
+        AArch64: 183,
+        /* reserved 184 */
+        ///  Amtel 32-bit microprocessor
+        AVR32: 185,
+        ///  STMicroelectronics STM8
+        STM8: 186,
+        ///  Tileta TILE64
+        TILE64: 187,
+        ///  Tilera TILEPro
+        TILEPro: 188,
+        ///  Xilinx MicroBlaze
+        MicroBlaze: 189,
+        ///  NVIDIA CUDA
+        CUDA: 190,
+        ///  Tilera TILE-Gx
+        TILEGX: 191,
+        ///  CloudShield
+        CloudShield: 192,
+        ///  KIPO-KAIST Core-A 1st gen.
+        CoreA_1st: 193,
+        ///  KIPO-KAIST Core-A 2nd gen.
+        CoreA_2nd: 194,
+        ///  Synopsys ARCompact V2
+        ARCompact2: 195,
+        ///  Open8 RISC
+        Open8: 196,
+        ///  Renesas RL78
+        RL78: 197,
+        ///  Broadcom VideoCore V
+        VideoCore5: 198,
+        ///  Renesas 78KOR
+        x78KOR: 199,
+        ///  Freescale 56800EX DSC
+        // 56800EX: 200,
+        ///  Beyond BA1
+        BA1: 201,
+        ///  Beyond BA2
+        BA2: 202,
+        ///  XMOS xCORE
+        xCORE: 203,
+        ///  Microchip 8-bit PIC(r)
+        MCHP_PIC: 204,
+        /* reserved 205-209 */
+        ///  KM211 KM32
+        KM32: 210,
+        ///  KM211 KMX32
+        KMX32: 211,
+        ///  KM211 KMX16
+        EMX16: 212,
+        ///  KM211 KMX8
+        EMX8: 213,
+        ///  KM211 KVARC
+        KVARC: 214,
+        ///  Paneve CDP
+        CDP: 215,
+        ///  Cognitive Smart Memory Processor
+        COGE: 216,
+        ///  Bluechip CoolEngine
+        CoolEngine: 217,
+        ///  Nanoradio Optimized RISC
+        NORC: 218,
+        ///  CSR Kalimba
+        CSR_Kalimba: 219,
+        ///  Zilog Z80
+        Z80: 220,
+        ///  Controls and Data Services VISIUMcore
+        VISIUM: 221,
+        ///  FTDI Chip FT32
+        FT32: 222,
+        ///  Moxie processor
+        Moxie: 223,
+        ///  AMD GPU
+        AMDGPU: 224,
+        /* reserved 225-242 */
+        ///  RISC-V
+        RISCV: 243,
 
-impl Machine_ {
-    pub fn as_machine(self) -> Machine {
-        match self.0 {
-            0x00 => Machine::None,
-            0x02 => Machine::Sparc,
-            0x03 => Machine::X86,
-            0x08 => Machine::Mips,
-            0x14 => Machine::PowerPC,
-            0x28 => Machine::Arm,
-            0x2A => Machine::SuperH,
-            0x32 => Machine::Ia64,
-            0x3E => Machine::X86_64,
-            0xB7 => Machine::AArch64,
-            0xF7 => Machine::BPF,
-            other => Machine::Other(other),
+        ///  Linux BPF -- in-kernel virtual machine
+        BPF: 247,
+        ///  C-SKY
+        CSKY: 252
+    ]
+}
+
+impl fmt::Debug for Machine {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "Other({})", self.0),
         }
     }
-}
-
-impl fmt::Debug for Machine_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_machine().fmt(f)
-    }
-}
-
-#[allow(non_camel_case_types)]
-#[derive(Debug, Clone, Copy, Eq, PartialEq)]
-pub enum Machine {
-    None,
-    Sparc,
-    X86,
-    Mips,
-    PowerPC,
-    Arm,
-    SuperH,
-    Ia64,
-    X86_64,
-    AArch64,
-    BPF,
-    Other(u16), // FIXME there are many, many more of these
 }
 
 // TODO any more constants that need to go in here?
