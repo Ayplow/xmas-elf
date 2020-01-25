@@ -223,16 +223,16 @@ impl<'a> fmt::Display for SectionHeader<'a> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         macro_rules! sh_display {
             ($sh: ident) => {{
-                r#try!(writeln!(f, "Section header:"));
-                r#try!(writeln!(f, "    name:             {:?}", $sh.name));
-                r#try!(writeln!(f, "    type:             {:?}", self.get_type()));
-                r#try!(writeln!(f, "    flags:            {:?}", $sh.flags));
-                r#try!(writeln!(f, "    address:          {:?}", $sh.address));
-                r#try!(writeln!(f, "    offset:           {:?}", $sh.offset));
-                r#try!(writeln!(f, "    size:             {:?}", $sh.size));
-                r#try!(writeln!(f, "    link:             {:?}", $sh.link));
-                r#try!(writeln!(f, "    align:            {:?}", $sh.align));
-                r#try!(writeln!(f, "    entry size:       {:?}", $sh.entry_size));
+                writeln!(f, "Section header:")?;
+                writeln!(f, "    name:             {:?}", $sh.name)?;
+                writeln!(f, "    type:             {:?}", self.get_type())?;
+                writeln!(f, "    flags:            {:?}", $sh.flags)?;
+                writeln!(f, "    address:          {:?}", $sh.address)?;
+                writeln!(f, "    offset:           {:?}", $sh.offset)?;
+                writeln!(f, "    size:             {:?}", $sh.size)?;
+                writeln!(f, "    link:             {:?}", $sh.link)?;
+                writeln!(f, "    align:            {:?}", $sh.align)?;
+                writeln!(f, "    entry size:       {:?}", $sh.entry_size)?;
                 Ok(())
             }}
         }
@@ -557,7 +557,7 @@ impl NoteHeader {
 }
 
 pub fn sanity_check<'a>(header: SectionHeader<'a>, _file: &ElfFile<'a>) -> Result<(), &'static str> {
-    if r#try!(header.get_type()) == ShType::Null {
+    if header.get_type()? == ShType::Null {
         return Ok(());
     }
     // TODO
