@@ -180,169 +180,148 @@ impl<P: fmt::Display> fmt::Display for HeaderPt2_<P> {
         Ok(())
     }
 }
+macro_rules! tagged {
+    (
+        $(#[$struct_meta:meta])*
+        pub $name:ident($orig:ty) [
+            $($fname:ident: $val:expr),*
+        ]
+    ) => {
+        $(#[$struct_meta])*
+        #[derive(PartialEq, Eq)]
+        pub struct $name(pub $orig);
 
-#[derive(Clone, Copy, Eq, PartialEq)]
-pub struct Class(pub u8);
+        impl $name {
+            $(
+                #[allow(non_upper_case_globals)]
+                pub const $fname: Self = Self($val);
+            )*
 
+            fn tag_str(&self) -> Option<&'static str> {
+                match *self {
+                    $(
+                        Self::$fname => Some(stringify!($fname)),
+                    )*
+                    _ => None
+                }
+            }
+        }
+    };
+}
+
+tagged! {
+    #[derive(Clone, Copy)]
+    pub Class(u8) [
+        None: 0,
+        ThirtyTwo: 1,
+        SixtyFour: 2
+    ]
+}
 impl Class {
-    #[allow(non_upper_case_globals)]
-    pub const None: Self = Self(0);
-    #[allow(non_upper_case_globals)]
-    pub const ThirtyTwo: Self = Self(1);
-    #[allow(non_upper_case_globals)]
-    pub const SixtyFour: Self = Self(2);
-
     pub fn is_none(&self) -> bool {
         *self == Self::None
     }
 }
-
 impl fmt::Debug for Class {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Self::None => write!(f, "None"),
-            Self::ThirtyTwo => write!(f, "ThirtyTwo"),
-            Self::SixtyFour => write!(f, "SixtyFour"),
-            Self(n) => write!(f, "Other({})", n)
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "Other({})", self.0)
         }
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub struct Data(pub u8);
-
+tagged! {
+    #[derive(Clone, Copy)]
+    pub Data(u8) [
+        None: 0,
+        LittleEndian: 1,
+        BigEndian: 2
+    ]
+}
 impl Data {
-    #[allow(non_upper_case_globals)]
-    const None: Self = Self(0);
-    #[allow(non_upper_case_globals)]
-    const LittleEndian: Self = Self(1);
-    #[allow(non_upper_case_globals)]
-    const BigEndian: Self = Self(2);
-
     pub fn is_none(&self) -> bool {
         *self == Self::None
     }
 }
-
 impl fmt::Debug for Data {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Self::None => write!(f, "None"),
-            Self::LittleEndian => write!(f, "LittleEndian"),
-            Self::BigEndian => write!(f, "BigEndian"),
-            Self(n) => write!(f, "Other({})", n)
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "Other({})", self.0)
         }
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub struct Version(u8);
-
+tagged! {
+    #[derive(Clone, Copy)]
+    pub Version(u8) [
+        None: 0,
+        Current: 1
+    ]
+}
 impl Version {
-    #[allow(non_upper_case_globals)]
-    pub const None: Self = Self(0);
-    #[allow(non_upper_case_globals)]
-    pub const Current: Self = Self(1);
-
     pub fn is_none(&self) -> bool {
         *self == Self::None
     }
 }
-
 impl fmt::Debug for Version {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Self::None => write!(f, "None"),
-            Self::Current => write!(f, "Current"),
-            Self(n) => write!(f, "Other({})", n)
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "Other({})", self.0)
         }
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub struct OsAbi(pub u8);
-
-impl OsAbi {
-    #[allow(non_upper_case_globals)]
-    pub const SystemV: Self = Self(0x00);
-    #[allow(non_upper_case_globals)]
-    pub const HpUx: Self = Self(0x01);
-    #[allow(non_upper_case_globals)]
-    pub const NetBSD: Self = Self(0x02);
-    #[allow(non_upper_case_globals)]
-    pub const Linux: Self = Self(0x03);
-    #[allow(non_upper_case_globals)]
-    pub const GnuHurd: Self = Self(0x04);
-    #[allow(non_upper_case_globals)]
-    pub const Solaris: Self = Self(0x06);
-    #[allow(non_upper_case_globals)]
-    pub const Aix: Self = Self(0x07);
-    #[allow(non_upper_case_globals)]
-    pub const Irix: Self = Self(0x08);
-    #[allow(non_upper_case_globals)]
-    pub const FreeBSD: Self = Self(0x09);
-    #[allow(non_upper_case_globals)]
-    pub const Tru64: Self = Self(0x0A);
-    #[allow(non_upper_case_globals)]
-    pub const NovellModesto: Self = Self(0x0B);
-    #[allow(non_upper_case_globals)]
-    pub const OpenBSD: Self = Self(0x0C);
-    #[allow(non_upper_case_globals)]
-    pub const OpenVMS: Self = Self(0x0D);
-    #[allow(non_upper_case_globals)]
-    pub const NonStopKernel: Self = Self(0x0E);
-    #[allow(non_upper_case_globals)]
-    pub const AROS: Self = Self(0x0F);
-    #[allow(non_upper_case_globals)]
-    pub const FenixOS: Self = Self(0x10);
-    #[allow(non_upper_case_globals)]
-    pub const CloudABI: Self = Self(0x11);
+tagged! {
+    #[derive(Clone, Copy)]
+    pub OsAbi(u8) [
+        SystemV: 0x00,
+        HpUx: 0x01,
+        NetBSD: 0x02,
+        Linux: 0x03,
+        GnuHurd: 0x04,
+        Solaris: 0x06,
+        Aix: 0x07,
+        Irix: 0x08,
+        FreeBSD: 0x09,
+        Tru64: 0x0A,
+        NovellModesto: 0x0B,
+        OpenBSD: 0x0C,
+        OpenVMS: 0x0D,
+        NonStopKernel: 0x0E,
+        AROS: 0x0F,
+        FenixOS: 0x10,
+        CloudABI: 0x11
+    ]
 }
 
 impl fmt::Debug for OsAbi {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Self::SystemV => write!(f, "SystemV"),
-            Self::HpUx => write!(f, "HpUx"),
-            Self::NetBSD => write!(f, "NetBSD"),
-            Self::Linux => write!(f, "Linux"),
-            Self::Solaris => write!(f, "Solaris"),
-            Self::Aix => write!(f, "Aix"),
-            Self::Irix => write!(f, "Irix"),
-            Self::FreeBSD => write!(f, "FreeBSD"),
-            Self::OpenBSD => write!(f, "OpenBSD"),
-            Self::OpenVMS => write!(f, "OpenVMS"),
-            Self(n) => write!(f, "Other({})", n)
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "Other({})", self.0)
         }
     }
 }
 
-
-#[derive(Clone, Copy, PartialEq, Eq)]
-pub struct Type(pub u16);
-
-impl Type {
-    #[allow(non_upper_case_globals)]
-    pub const None: Self = Self(0);
-    #[allow(non_upper_case_globals)]
-    pub const Relocatable: Self = Self(1);
-    #[allow(non_upper_case_globals)]
-    pub const Executable: Self = Self(2);
-    #[allow(non_upper_case_globals)]
-    pub const SharedObject: Self = Self(3);
-    #[allow(non_upper_case_globals)]
-    pub const Core: Self = Self(4);
+tagged! {
+    #[derive(Clone, Copy)]
+    pub Type(u16) [
+        None: 0,
+        Relocatable: 1,
+        Executable: 2,
+        SharedObject: 3,
+        Core: 4
+    ]
 }
 
 impl fmt::Debug for Type {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match *self {
-            Self::None => write!(f, "None"),
-            Self::Relocatable => write!(f, "Relocatable"),
-            Self::Executable => write!(f, "Executable"),
-            Self::SharedObject => write!(f, "SharedObject"),
-            Self::Core => write!(f, "Core"),
-            Self(n) => write!(f, "ProcessorSpecific({})", n)
+        match self.tag_str() {
+            Some(s) => write!(f, "{}", s),
+            None => write!(f, "ProcessorSpecific({})", self.0)
         }
     }
 }
