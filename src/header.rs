@@ -119,7 +119,7 @@ impl<'a> HeaderPt2<'a> {
     }
 
     // TODO move to impl Header
-    getter!(type_, Type_);
+    getter!(type_, Type);
     getter!(machine, Machine_);
     getter!(version, u32);
     getter!(header_size, u16);
@@ -145,7 +145,7 @@ impl<'a> fmt::Display for HeaderPt2<'a> {
 #[derive(Debug)]
 #[repr(C)]
 pub struct HeaderPt2_<P> {
-    pub type_: Type_,
+    pub type_: Type,
     pub machine: Machine_,
     pub version: u32,
     pub entry_point: P,
@@ -317,36 +317,34 @@ impl fmt::Debug for OsAbi {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct Type_(pub u16);
 
-impl Type_ {
-    pub fn as_type(self) -> Type {
-        match self.0 {
-            0 => Type::None,
-            1 => Type::Relocatable,
-            2 => Type::Executable,
-            3 => Type::SharedObject,
-            4 => Type::Core,
-            x => Type::ProcessorSpecific(x),
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Type(pub u16);
+
+impl Type {
+    #[allow(non_upper_case_globals)]
+    pub const None: Self = Self(0);
+    #[allow(non_upper_case_globals)]
+    pub const Relocatable: Self = Self(1);
+    #[allow(non_upper_case_globals)]
+    pub const Executable: Self = Self(2);
+    #[allow(non_upper_case_globals)]
+    pub const SharedObject: Self = Self(3);
+    #[allow(non_upper_case_globals)]
+    pub const Core: Self = Self(4);
+}
+
+impl fmt::Debug for Type {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Self::None => write!(f, "None"),
+            Self::Relocatable => write!(f, "Relocatable"),
+            Self::Executable => write!(f, "Executable"),
+            Self::SharedObject => write!(f, "SharedObject"),
+            Self::Core => write!(f, "Core"),
+            Self(n) => write!(f, "ProcessorSpecific({})", n)
         }
     }
-}
-
-impl fmt::Debug for Type_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_type().fmt(f)
-    }
-}
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub enum Type {
-    None,
-    Relocatable,
-    Executable,
-    SharedObject,
-    Core,
-    ProcessorSpecific(u16), // TODO OsSpecific
 }
 
 #[derive(Clone, Copy)]
