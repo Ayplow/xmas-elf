@@ -184,7 +184,7 @@ macro_rules! tagged {
     (
         $(#[$struct_meta:meta])*
         pub $name:ident($orig:ty) [
-            $($fname:ident: $val:expr),*
+            $($(#[$field_meta:meta])* $fname:ident: $val:expr),*
         ]
     ) => {
         $(#[$struct_meta])*
@@ -194,6 +194,7 @@ macro_rules! tagged {
         impl $name {
             $(
                 #[allow(non_upper_case_globals)]
+                $(#[$field_meta])*
                 pub const $fname: Self = Self($val);
             )*
 
