@@ -66,7 +66,7 @@ pub struct HeaderPt1 {
     pub magic: [u8; 4],
     pub class: Class,
     pub data: Data,
-    pub version: Version_,
+    pub version: Version,
     pub os_abi: OsAbi_,
     // Often also just padding.
     pub abi_version: u8,
@@ -85,7 +85,7 @@ impl HeaderPt1 {
     }
 
     pub fn version(&self) -> Version {
-        self.version.as_version()
+        self.version
     }
 
     pub fn os_abi(&self) -> OsAbi {
@@ -235,42 +235,26 @@ impl fmt::Debug for Data {
     }
 }
 
-#[derive(Clone, Copy)]
-pub struct Version_(u8);
-
-impl Version_ {
-    pub fn as_version(self) -> Version {
-        match self.0 {
-            0 => Version::None,
-            1 => Version::Current,
-            other => Version::Other(other),
-        }
-    }
-
-    pub fn is_none(self) -> bool {
-        self.0 == 0
-    }
-}
-
-impl fmt::Debug for Version_ {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        self.as_version().fmt(f)
-    }
-}
-
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub enum Version {
-    None,
-    Current,
-    Other(u8),
-}
+#[derive(Clone, Copy, PartialEq, Eq)]
+pub struct Version(u8);
 
 impl Version {
+    #[allow(non_upper_case_globals)]
+    pub const None: Self = Self(0);
+    #[allow(non_upper_case_globals)]
+    pub const Current: Self = Self(1);
+
     pub fn is_none(&self) -> bool {
-        if let Version::None = *self {
-            true
-        } else {
-            false
+        *self == Self::None
+    }
+}
+
+impl fmt::Debug for Version {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match *self {
+            Self::None => write!(f, "None"),
+            Self::Current => write!(f, "Current"),
+            Self(n) => write!(f, "Other({})", n)
         }
     }
 }
